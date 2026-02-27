@@ -214,7 +214,7 @@ function enviarFormulario(e) {
 
   /* ========================================================================
             COMO SERÁ O CÓDIGO REAL AQUI (Integrando com Google Apps Script)
-    ========================================================================
+    ========================================================================*/
             fetch('https://script.google.com/macros/s/AKfycbzLTjy6vUJ_JCPJiQtFBajnHWpi5gWLtTyxmH5zbpicxjdBpK3fLXKMSaCyMEfeqhX1/exec', {
                 method: 'POST',
                 mode: 'no-cors', // Importante para evitar erro de CORS no Google
@@ -223,6 +223,5 @@ function enviarFormulario(e) {
             }).then(() => {
                 // Lógica de sucesso aqui
             }).catch(error => console.error('Erro:', error));
-    ========================================================================
-   */
+   
 }
