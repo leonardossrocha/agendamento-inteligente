@@ -145,7 +145,7 @@ function atualizarBotoesRemover() {
   }
 }
 
-// --- Lógica de Envio para agenda.xlsx ---
+// --- Lógica de Envio para agenda ---
 function enviarFormulario(e) {
   e.preventDefault();
 
@@ -179,20 +179,20 @@ function enviarFormulario(e) {
     agendamentos: visitas,
   };
 
-  console.log("🚀 Dados prontos para gravar em agenda.xlsx:", payload);
+  console.log("🚀 Dados prontos para gravar em agenda:", payload);
 
   // 5. Simula o envio (Efeito de Loading)
   const btnSubmit = document.getElementById("btnSubmit");
   const iconeOriginal = btnSubmit.innerHTML;
 
   btnSubmit.disabled = true;
-  btnSubmit.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> <span>Salvando na agenda.xlsx...</span>`;
+  btnSubmit.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> <span>Salvando na agenda...</span>`;
   lucide.createIcons();
 
   // Simula o tempo de resposta da rede (1.5 segundos)
   setTimeout(() => {
     alert(
-      `✅ Sucesso! Agendamento registrado para ${cliente.nome} em agenda.xlsx`,
+      `✅ Sucesso! Agendamento registrado para ${cliente.nome} em agenda`,
     );
 
     // Reseta o formulário
