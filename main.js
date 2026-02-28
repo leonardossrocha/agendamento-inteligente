@@ -1,65 +1,49 @@
 // Inicializa os ícones
 lucide.createIcons();
 
-// Extraído do seu CSV enviado (RelacaoAlfa.csv) - Base de Leitura
-const baseClientes = [
-  {
-    id: 1,
-    nome: "ADEL MASSABKI JUNIOR",
-    categoria: 5,
-    especialidade: "GOB",
-    cidade: "CAMBÉ",
-  },
-  {
-    id: 2,
-    nome: "ADRIANA MARTIN SWENSON",
-    categoria: 4,
-    especialidade: "DERMO",
-    cidade: "LONDRINA",
-  },
-  {
-    id: 3,
-    nome: "AIDE MASSUMI OHE",
-    categoria: 5,
-    especialidade: "DERMO",
-    cidade: "LONDRINA",
-  },
-  {
-    id: 4,
-    nome: "VANESSA SARTO SOARES",
-    categoria: 2,
-    especialidade: "GOB",
-    cidade: "MARINGÁ",
-  },
-  {
-    id: 5,
-    nome: "VERA CRISTINA SCHNITZLER",
-    categoria: 3,
-    especialidade: "DERMO",
-    cidade: "LONDRINA",
-  },
-  {
-    id: 6,
-    nome: "VERA L. RODRIGUES S. PEDRAO",
-    categoria: 5,
-    especialidade: "GOB",
-    cidade: "LONDRINA",
-  },
-];
+// A URL OFICIAL DO SEU BACK-END NO GOOGLE
+const API_URL = "https://script.google.com/macros/s/AKfycbzLTjy6vUJ_JCPJiQtFBajnHWpi5gWLtTyxmH5zbpicxjdBpK3fLXKMSaCyMEfeqhX1/exec";
 
-// Popula o select ao carregar a página
-window.onload = () => {
+// Variável global que receberá os dados reais da planilha RelacaoAlfa
+let baseClientes = [];
+
+// ==========================================
+// 1. LEITURA (GET) - Carrega os médicos
+// ==========================================
+window.onload = async () => {
   const select = document.getElementById("medicoSelect");
-  baseClientes.forEach((cliente) => {
-    const option = document.createElement("option");
-    option.value = cliente.id;
-    option.textContent = cliente.nome;
-    select.appendChild(option);
-  });
+  select.innerHTML = '<option value="" disabled selected>Carregando médicos da base...</option>';
   atualizarBotoesRemover();
+  
+  try {
+      // Faz a requisição real para o Google Apps Script
+      const resposta = await fetch(API_URL);
+      const json = await resposta.json();
+      
+      if(json.status === 'sucesso') {
+          baseClientes = json.dados;
+          
+          // Limpa o select e popula com os dados da planilha
+          select.innerHTML = '<option value="" disabled selected>Escolha um cliente na base...</option>';
+          baseClientes.forEach((cliente) => {
+              const option = document.createElement("option");
+              option.value = cliente.id;
+              option.textContent = cliente.nome;
+              select.appendChild(option);
+          });
+      } else {
+          select.innerHTML = '<option value="" disabled selected>Erro ao carregar dados</option>';
+          console.error("Erro da API:", json.mensagem);
+      }
+  } catch (error) {
+      select.innerHTML = '<option value="" disabled selected>Falha na conexão com o Drive</option>';
+      console.error("Erro de rede:", error);
+  }
 };
 
-// Função principal do evento onChange
+// ==========================================
+// 2. LÓGICA DE INTERFACE (UI)
+// ==========================================
 function atualizarCategoria() {
   const select = document.getElementById("medicoSelect");
   const clienteId = parseInt(select.value);
@@ -82,21 +66,16 @@ function mostrarCategoria(cliente) {
   cidValor.textContent = cliente.cidade;
 
   if (cliente.categoria <= 3) {
-    container.className =
-      "p-4 rounded-lg border-2 border-emerald-200 bg-emerald-50 transition-all duration-300 space-y-3";
+    container.className = "p-4 rounded-lg border-2 border-emerald-200 bg-emerald-50 transition-all duration-300 space-y-3";
     valor.className = "text-2xl font-black mt-1 text-emerald-700";
-    badge.className =
-      "px-3 py-1 rounded-full text-sm font-semibold bg-emerald-100 text-emerald-800 flex items-center gap-1";
+    badge.className = "px-3 py-1 rounded-full text-sm font-semibold bg-emerald-100 text-emerald-800 flex items-center gap-1";
     badge.innerHTML = `<i data-lucide="star" class="w-4 h-4"></i> Cliente Potencial`;
-    mensagem.textContent =
-      "🎯 Foco na apresentação! Cliente com alta probabilidade.";
+    mensagem.textContent = "🎯 Foco na apresentação! Cliente com alta probabilidade.";
     mensagem.className = "text-sm mt-1 text-emerald-600 font-medium";
   } else {
-    container.className =
-      "p-4 rounded-lg border-2 border-orange-200 bg-orange-50 transition-all duration-300 space-y-3";
+    container.className = "p-4 rounded-lg border-2 border-orange-200 bg-orange-50 transition-all duration-300 space-y-3";
     valor.className = "text-2xl font-black mt-1 text-orange-700";
-    badge.className =
-      "px-3 py-1 rounded-full text-sm font-semibold bg-orange-100 text-orange-800 flex items-center gap-1";
+    badge.className = "px-3 py-1 rounded-full text-sm font-semibold bg-orange-100 text-orange-800 flex items-center gap-1";
     badge.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4"></i> Manutenção`;
     mensagem.textContent = "⏳ Visita de manutenção. Seja rápido e objetivo.";
     mensagem.className = "text-sm mt-1 text-orange-600 font-medium";
@@ -104,18 +83,17 @@ function mostrarCategoria(cliente) {
   lucide.createIcons();
 }
 
-// --- Lógica para Múltiplas Datas/Horários ---
 function adicionarData() {
   const container = document.getElementById("datasContainer");
   const novaLinha = document.createElement("div");
   novaLinha.className = "flex gap-2 items-center data-row mt-3";
   novaLinha.innerHTML = `
-                <input type="date" required class="flex-1 p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm">
-                <input type="time" required class="flex-1 p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm">
-                <button type="button" onclick="removerLinha(this)" class="p-3 text-red-500 hover:bg-red-50 rounded-lg transition-colors btn-remover" title="Remover">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            `;
+        <input type="date" required class="flex-1 p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm">
+        <input type="time" required class="flex-1 p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm">
+        <button type="button" onclick="removerLinha(this)" class="p-3 text-red-500 hover:bg-red-50 rounded-lg transition-colors btn-remover" title="Remover">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+    `;
   container.appendChild(novaLinha);
   lucide.createIcons();
   atualizarBotoesRemover();
@@ -145,23 +123,18 @@ function atualizarBotoesRemover() {
   }
 }
 
-// --- Lógica de Envio para agenda ---
-function enviarFormulario(e) {
+// ==========================================
+// 3. GRAVAÇÃO (POST) - Envia para a agenda
+// ==========================================
+async function enviarFormulario(e) {
   e.preventDefault();
 
-  // 1. Coleta os dados do Médico
   const select = document.getElementById("medicoSelect");
   const cliente = baseClientes.find((c) => c.id === parseInt(select.value));
 
-  // 2. Coleta os Dias da Semana selecionados
-  const diasCheckboxes = document.querySelectorAll(
-    'input[name="dias"]:checked',
-  );
-  const diasSelecionados = Array.from(diasCheckboxes)
-    .map((cb) => cb.value)
-    .join(", ");
+  const diasCheckboxes = document.querySelectorAll('input[name="dias"]:checked');
+  const diasSelecionados = Array.from(diasCheckboxes).map((cb) => cb.value).join(", ");
 
-  // 3. Coleta as Datas e Horários
   const visitas = [];
   document.querySelectorAll(".data-row").forEach((row) => {
     const data = row.querySelector('input[type="date"]').value;
@@ -169,7 +142,6 @@ function enviarFormulario(e) {
     if (data && hora) visitas.push({ data, hora });
   });
 
-  // 4. Monta o Payload (JSON) que será enviado para a API
   const payload = {
     medico: cliente.nome,
     categoria: cliente.categoria,
@@ -179,49 +151,49 @@ function enviarFormulario(e) {
     agendamentos: visitas,
   };
 
-  console.log("🚀 Dados prontos para gravar em agenda:", payload);
-
-  // 5. Simula o envio (Efeito de Loading)
+  // Efeito de Loading Visual (Botão bloqueado)
   const btnSubmit = document.getElementById("btnSubmit");
   const iconeOriginal = btnSubmit.innerHTML;
-
   btnSubmit.disabled = true;
   btnSubmit.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> <span>Salvando na agenda...</span>`;
   lucide.createIcons();
 
-  // Simula o tempo de resposta da rede (1.5 segundos)
-  setTimeout(() => {
-    alert(
-      `✅ Sucesso! Agendamento registrado para ${cliente.nome} em agenda`,
-    );
+  try {
+      // O PULO DO GATO PARA VENCER O CORS:
+      // Enviar como 'text/plain' evita a requisição de pré-voo (OPTIONS) no navegador
+      const resposta = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+              "Content-Type": "text/plain;charset=utf-8",
+          },
+          body: JSON.stringify(payload),
+      });
 
-    // Reseta o formulário
-    document.getElementById("formAgendamento").reset();
-    document.getElementById("categoriaContainer").classList.add("hidden");
+      const json = await resposta.json();
 
-    // Remove linhas extras de datas
-    const datasContainer = document.getElementById("datasContainer");
-    while (datasContainer.children.length > 1) {
-      datasContainer.removeChild(datasContainer.lastChild);
-    }
-    atualizarBotoesRemover();
+      if(json.status === 'sucesso') {
+          alert(`✅ Sucesso! Agendamento registrado para ${cliente.nome} em agenda.xlsx`);
 
-    // Volta o botão ao normal
-    btnSubmit.disabled = false;
-    btnSubmit.innerHTML = iconeOriginal;
-    lucide.createIcons();
-  }, 1500);
+          // Reseta a interface
+          document.getElementById("formAgendamento").reset();
+          document.getElementById("categoriaContainer").classList.add("hidden");
 
-  /* ========================================================================
-            COMO SERÁ O CÓDIGO REAL AQUI (Integrando com Google Apps Script)
-    ========================================================================*/
-            fetch('https://script.google.com/macros/s/AKfycbzLTjy6vUJ_JCPJiQtFBajnHWpi5gWLtTyxmH5zbpicxjdBpK3fLXKMSaCyMEfeqhX1/exec', {
-                method: 'POST',
-                mode: 'no-cors', // Importante para evitar erro de CORS no Google
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            }).then(() => {
-                // Lógica de sucesso aqui
-            }).catch(error => console.error('Erro:', error));
-   
+          const datasContainer = document.getElementById("datasContainer");
+          while (datasContainer.children.length > 1) {
+              datasContainer.removeChild(datasContainer.lastChild);
+          }
+          atualizarBotoesRemover();
+      } else {
+          alert("❌ Erro ao salvar no Drive: " + json.mensagem);
+      }
+
+  } catch (error) {
+      console.error("Erro na requisição POST:", error);
+      alert("❌ Ocorreu um erro ao comunicar com a planilha. Verifique sua conexão.");
+  } finally {
+      // Libera o botão novamente independente de dar certo ou errado
+      btnSubmit.disabled = false;
+      btnSubmit.innerHTML = iconeOriginal;
+      lucide.createIcons();
+  }
 }
