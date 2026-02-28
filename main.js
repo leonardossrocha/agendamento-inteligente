@@ -173,7 +173,7 @@ async function enviarFormulario(e) {
       const json = await resposta.json();
 
       if(json.status === 'sucesso') {
-          alert(`✅ Sucesso! Agendamento registrado para ${cliente.nome} em agenda.xlsx`);
+          alert(`✅ Sucesso! Agendamento registrado para ${cliente.nome} em agenda`);
 
           // Reseta a interface
           document.getElementById("formAgendamento").reset();
