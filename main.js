@@ -2,7 +2,8 @@
 lucide.createIcons();
 
 // A URL OFICIAL DO SEU BACK-END NO GOOGLE
-const API_URL = "https://script.google.com/macros/s/AKfycbzLTjy6vUJ_JCPJiQtFBajnHWpi5gWLtTyxmH5zbpicxjdBpK3fLXKMSaCyMEfeqhX1/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxFmy9pTGCg6hOFpXBN_ElR42etOVpXmye5EzT_ThV2B1ssF66OqO2MUGK_aaorZmsV/exec";
+
 
 // Variável global que receberá os dados reais da planilha RelacaoAlfa
 let baseClientes = [];
